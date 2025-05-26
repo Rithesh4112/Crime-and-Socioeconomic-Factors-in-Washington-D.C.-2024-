@@ -75,20 +75,59 @@ Random Forest with class weights was also strong, with high recall (49%) and dec
 
 Logistic Regression, while simpler, matched SMOTE in recall but underperformed in overall expressiveness.
 
-
-
 Baseline models failed to detect violent crimes effectively
 
 Class weighting outperformed SMOTE, especially with XGBoost
 
 XGBoost with class weights yielded the best balance of recall and precision
 
-### Tools & Libraries
-Python (pandas, seaborn, matplotlib, scikit-learn, XGBoost, imbalanced-learn)
+## Feedforward Neural Network (FNN) Results & Interpretation
 
-Jupyter Notebooks
+### Interpretation of Class Weighting Results
 
-Folium/Plotly for interactive maps
+The class-weighted version of the FNN successfully detected violent crimes, achieving 424 correct predictions. This marks a clear improvement over the unweighted baseline, indicating that class weighting increases the model’s sensitivity to the minority (violent) class.
+
+However, this came with a trade-off. The model misclassified 2006 property crimes as violent, significantly increasing false positives and reducing overall accuracy to 60%. Despite that, recall for violent crimes improved to 0.65, which is a substantial gain if identifying violent crimes is the top priority.
+
+Precision for the violent class was low at 0.17, meaning most violent predictions were incorrect. In contrast, the property class maintained a high precision of 0.93, but its recall dropped to 0.59. Overall, class weighting made the model more aggressive in detecting violence but less precise.
+
+Whether this is a better model depends on the application. If missing a violent crime is more harmful than triggering false alarms, this model is preferable. However, if false positives must be minimized and precision is crucial, the baseline performs better.
+
+---
+
+## SMOTE vs Class Weighting (FNN)
+
+Both SMOTE and class weighting produced nearly identical results across metrics. Accuracy remained at 60%, and ROC AUC was approximately 0.675 for both.
+
+SMOTE slightly improved recall for violent crimes, increasing it from 0.65 to 0.66. It also raised the number of true positives from 424 to 430. However, it also increased false positives, with 2030 property crimes misclassified as violent, compared to 2006 in the class-weighted model.
+
+Precision for the violent class remained low at 0.17 in both models. This shows that while both methods improve recall, they still struggle with precision. The SMOTE model was marginally more aggressive in flagging violent crimes, resulting in more false alarms.
+
+Overall, SMOTE and class weighting achieved almost equivalent performance. SMOTE offered a very small increase in recall but at the cost of slightly more false positives. This suggests SMOTE did not meaningfully outperform class weighting, though it may still be viable with further tuning, such as threshold adjustment or hybrid techniques.
+
+The SMOTE model stopped training early at epoch 6, likely due to the balanced nature of the oversampled data, allowing quick optimization but also early convergence.
+
+---
+
+## Combined Model Evaluation Summary (Classical and Neural)
+
+Logistic Regression in its baseline form failed to detect any violent crimes. When combined with SMOTE or class weighting, it achieved around 60% recall for violent crimes but suffered from very low precision (17%) and moderate accuracy (\~61%).
+
+Random Forest performed slightly better. With class weighting, it achieved 49% recall and 20% precision for violent crimes, showing moderate improvement. SMOTE brought the recall up to 27%, but again with low precision.
+
+XGBoost with class weighting achieved the best balance among classical models, reaching 60% recall and 19% precision for violent crimes, with an overall accuracy of 65%. It outperformed its own baseline and SMOTE variants.
+
+PyTorch FNN with either class weighting or SMOTE outperformed classical models in terms of violent crime recall, reaching 65% and 66% respectively. However, both models had equally low precision (17%) and high false positive rates, which lowered overall confidence in violent predictions.
+
+---
+
+### Key Takeaways
+
+* PyTorch FNN models with class weighting or SMOTE achieved the best recall for violent crimes but generated a high number of false positives due to low precision.
+* XGBoost with class weights was the most balanced among classical models, offering good recall with slightly better precision.
+* SMOTE consistently improved recall across all models, but often reduced precision, making it a trade-off strategy.
+* Baseline models failed to detect violent crimes altogether, making them unsuitable in contexts where identifying violent incidents is critical.
+
 
 ### Future Work
 Expand analysis to additional cities for geographic generalization
